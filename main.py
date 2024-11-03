@@ -9,7 +9,7 @@ from sklearn.exceptions import ConvergenceWarning
 from sklearn.exceptions import FitFailedWarning
 from pandas.errors import SettingWithCopyWarning
 
-from utils.datasets import get_data_openml, get_data_openml_id
+from utils.datasets import get_data_openml
 
 import argparse
 
