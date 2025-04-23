@@ -17,7 +17,7 @@ def get_data_openml(name):
         'climate': 1467,
         'metal': 1447,
         'breast-c': 23499,
-        'breast-t': 8,
+        'liver': 8,
         'ilpd': 1480,
         'heart-l': 1512,
         'marketing': 986,
