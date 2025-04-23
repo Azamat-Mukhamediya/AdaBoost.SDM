@@ -24,7 +24,7 @@ parser.add_argument(
         'climate',
         'metal',
         'breast-c',
-        'breast-t',
+        'liver',
         'ilpd',
         'heart-l',
         'marketing',
