@@ -40,6 +40,7 @@ class AdaBoostSDM(BaseEstimator, ClassifierMixin):
         self.models = []
         self.weights = []
         C = np.zeros(X.shape[0])
+        N = X.shape[0]
 
         for t in range(self.max_models):
 
@@ -48,20 +49,20 @@ class AdaBoostSDM(BaseEstimator, ClassifierMixin):
             Cji_minus = C - C[:, np.newaxis]
 
             # comptue p_i and q_i for each data point using Eq. 15 and Eq. 16 from the paper, respectively
-            p_1 = np.exp(-2*C)*(y == 1)
+            p_1 = np.exp(-2*C)*(y == 1) / N
 
             p_2 = np.einsum('ij, ij -> i', masked_W_sim, np.exp(Cji_minus)) * self.lambda_G / 2
             p_3 = np.einsum('ij, ij -> i', masked_W_dis, np.exp(-Cij_plus)) * self.lambda_G / 2
 
-            p2 = np.add(p_2, p_3)
+            p2 = np.add(p_2, p_3) / (N**2)
             p = np.add(p_1, p2)
 
-            q_1 = np.exp(2*C)*(y == -1)
+            q_1 = np.exp(2*C)*(y == -1) / N
 
             q_2 = np.einsum('ij, ij -> i', masked_W_sim, np.exp(Cij_minus)) * self.lambda_G / 2
             q_3 = np.einsum('ij, ij -> i', masked_W_dis, np.exp(Cij_plus)) * self.lambda_G / 2
 
-            q2 = np.add(q_2, q_3)
+            q2 = np.add(q_2, q_3) / (N**2)
             q = np.add(q_1, q2)
 
             pi = p*(y == 1)
@@ -106,4 +107,18 @@ class AdaBoostSDM(BaseEstimator, ClassifierMixin):
             preds = np.add(preds, self.weights[i]*self.models[i].predict(X))
         preds = np.array(list(map(lambda x: 1 if x > 0 else -1, preds)))
         preds = preds.astype(int)
+        return preds
+
+    def scores(self, X):
+        preds = np.zeros(X.shape[0])
+        # Predict weighting each model
+        for i in range(len(self.models)):
+            preds = np.add(preds, self.weights[i]*self.models[i].predict(X))
+        return preds
+    
+    def predict_proba(self, X):
+        preds = np.zeros(X.shape[0])
+        # Predict weighting each model
+        for i in range(len(self.models)):
+            preds = np.add(preds, self.weights[i]*self.models[i].predict(X))
         return preds
