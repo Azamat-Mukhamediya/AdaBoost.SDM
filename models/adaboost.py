@@ -62,3 +62,11 @@ class AdaBoost(BaseEstimator, ClassifierMixin):
         preds = np.array(list(map(lambda x: 1 if x > 0 else -1, preds)))
         preds = preds.astype(int)
         return preds
+
+    def scores(self, X):
+        preds = np.zeros(X.shape[0])
+        # Predict weighting each model
+        for i in range(len(self.models)):
+            preds = np.add(preds, self.weights[i]*self.models[i].predict(X))
+
+        return preds
