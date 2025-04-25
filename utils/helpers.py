@@ -25,20 +25,20 @@ def get_model_and_params_grid(model_name, cat_idxs, cat_dims):
 
         param_grid = {
             "clf__sigma_percentile": [10, 20, 30, 40, 50, 60, 70],
-            "clf__lambda_G": [5e-5, 1e-5, 5e-4, 1e-4, 5e-3, 1e-3, 5e-2, 1e-2, ],
+            "clf__lambda_G": [1e-4, 1e-3, 1e-2, 1e-1, 0, 1, 10, 100],
         }
     elif model_name == 'LapRLS':
         model = LapRLS()
         param_grid = {
-            "clf__lambda_k": [0.001, 0.01, 0.1, 1],
-            "clf__lambda_u": [0.001, 0.01, 0.1, 1],
+            "clf__lambda_k": [1e-4, 1e-3, 1e-2, 1e-1, 0, 1, 10, 100],
+            "clf__lambda_u": [1e-4, 1e-3, 1e-2, 1e-1, 0, 1, 10, 100],
             "clf__n_neighbors": [5, 7, 9, 11],
         }
     elif model_name == 'LapSVM':
         model = LapSVM()
         param_grid = {
-            "clf__lambda_k": [0.001, 0.01, 0.1, 1],
-            "clf__lambda_u": [0.001, 0.01, 0.1, 1],
+            "clf__lambda_k": [1e-4, 1e-3, 1e-2, 1e-1, 0, 1, 10, 100],
+            "clf__lambda_u": [1e-4, 1e-3, 1e-2, 1e-1, 0, 1, 10, 100],
             "clf__n_neighbors": [5, 7, 9, 11],
         }
     elif model_name == 'AdaBoost':
@@ -51,13 +51,21 @@ def get_model_and_params_grid(model_name, cat_idxs, cat_dims):
 
     return model, param_grid
 
+def roc_auc_score_func(estimator,  X, y_true):
+    if set(np.unique(y_train)) == {-1, 1}:
+        # Convert -1 and 1 labels to 0 and 1
+        y_true = (y_true + 1) // 2  # Convert -1 to 0 and 1 to 1
 
+    y_pred = estimator.predict_proba(X)
+
+    return roc_auc_score(y_true, y_pred)  # We use the probability for the positive class
+    
 def hyperparams_tuning(model, param_grid, X_train, y_train):
 
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     pipe = Pipeline(steps=[("clf", model)])
 
-    search = GridSearchCV(pipe, param_grid, cv=cv, n_jobs=5)
+    search = GridSearchCV(pipe, param_grid, cv=cv, n_jobs=5, scoring=roc_auc_score_func)
     search.fit(X_train, y_train)
 
     return search.best_estimator_
