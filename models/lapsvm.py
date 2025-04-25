@@ -110,3 +110,15 @@ class LapSVM(BaseEstimator, ClassifierMixin):
         predictions[Y_ < 0] = -1
 
         return predictions
+
+    def scores(self, Xtest):
+
+        Y_ = self.decision_function(Xtest)
+
+        return Y_
+    
+    def predict_proba(self, Xtest):
+
+        Y_ = self.decision_function(Xtest)
+
+        return Y_
