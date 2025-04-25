@@ -194,3 +194,20 @@ class LapRLS(BaseEstimator, ClassifierMixin):
         predictions = self.predict(Xtest)
         accuracy = sum(predictions == Ytrue) / len(predictions)
         print('Accuracy: {}%'.format(round(accuracy * 100, 2)))
+
+    def decision_function(self, Xtest):
+        new_K = self.kernel(self.X, Xtest)
+        f = np.squeeze(np.array(self.alpha)).dot(new_K)
+        return f-self.b
+    
+    def scores(self, Xtest):
+
+        Y_ = self.decision_function(Xtest)
+
+        return Y_
+    
+    def predict_proba(self, Xtest):
+
+        Y_ = self.decision_function(Xtest)
+
+        return Y_
