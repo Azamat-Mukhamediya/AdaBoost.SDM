@@ -26,6 +26,7 @@ Datasets are colleclted from OpenML(https://openml.org/) dataset repositories.
 
 ## Citation
 
+```
 @article{MUKHAMEDIYA202566,
   author = {Azamat Mukhamediya and Amin Zollanvari},
   title = {AdaBoost.SDM: Similarity and dissimilarity-based manifold regularized adaptive boosting algorithm},
@@ -37,3 +38,4 @@ Datasets are colleclted from OpenML(https://openml.org/) dataset repositories.
   doi = {https://doi.org/10.1016/j.patrec.2025.05.016},
   url = {https://www.sciencedirect.com/science/article/pii/S0167865525002090},
 }
+```
